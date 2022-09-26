@@ -2,30 +2,52 @@ import { User } from './Models/User.js';
 
 export const resolvers = {
     Query: {
-        getAllUsers() {
-            return 'here is all users'
+        async getAllUsers() {
+            try {
+                return await User.find();
+            } catch (error) {
+                console.log(error.message);
+            }
         },
-        getUserById(_, args) {
-            return `selected user by id: ---> ${args.id}`
+        async getUserById(_, { id }) {
+            try {
+                return await User.findById(id);
+            } catch (error) {
+                console.log(error.message)
+            }
         }
     },
     Mutation: {
-        createUser(_, args) {
-            console.log(args.input.firstName);
-            console.log('firstName: --->', args.input.firstName);
-            console.log('secondName: --->', args.input.secondName);
-            console.log('birthDate: --->', args.input.birthDate);
-            console.log('email: --->', args.input.email);
-            console.log('isAdmin: --->', args.input.isAdmin);
-            return 'done';
+        async createUser(_, { input }) {
+            const data = input;
+            const user = new User({
+                firstName: data.firstName,
+                secondName: data.secondName,
+                birthDate: data.birthDate,
+                email: data.email,
+                isAdmin: data.isAdmin,
+            });
+
+            await user.save();
+
+            return user;
         },
-        updateUser(_, args) {
-            console.log('args: --->', args);
-            return `updated user by id: ---> ${args.id}`
+        async updateUser(_, { id, input }) {
+            const update = {...input};
+            await User.findOneAndUpdate({_id: id}, update);
+
+            // it can be bad solution, pick that way,
+            // because after updating getting back old data
+            return await User.findById(id);
         },
-        deleteUser(_, args) {
-            console.log('args: --->', args);
-            return `deleted user by id: ---> ${args.id}`
+        async deleteUser(_, { id }) {
+            try {
+
+               return await User.findByIdAndRemove(id);
+
+            } catch (error) {
+                console.log(error.message);
+            }
         }
     }
 };
