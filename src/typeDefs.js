@@ -9,6 +9,14 @@ export const typeDefs = gql`
         isAdmin: Boolean!
     }
     
+    input UpdateDataInput {
+        firstName: String
+        secondName: String
+        birthDate: Int
+        email: String
+        isAdmin: Boolean
+    }
+    
     type User {
         id: ID!
         firstName: String!
@@ -19,13 +27,13 @@ export const typeDefs = gql`
     }
     
     type Query {
-        getAllUsers: String
-        getUserById(id: ID!): String
+        getAllUsers: [User!]!
+        getUserById(id: ID!): User!
     }
     
     type Mutation {
-        createUser(input: CreateUserInput!): String
-        updateUser(id: String!): String
-        deleteUser(id: String!): String
+        createUser(input: CreateUserInput!): User!
+        updateUser(id: ID!, input: UpdateDataInput!): User!
+        deleteUser(id: ID!): User!
     }
 `;
